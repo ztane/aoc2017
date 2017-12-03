@@ -430,3 +430,24 @@ def spiral_walk() -> typing.Iterator[complex]:
 
         coords += 1 - direction
         direction = 1
+
+
+_CNEIGHBOURHOOD_8_WITH_SELF = list(x + y * 1j
+                                   for (x, y)
+                                   in product([-1, 0, 1], repeat=2))
+_CNEIGHBOURHOOD_8 = [i for i in _CNEIGHBOURHOOD_8_WITH_SELF if i]
+
+
+def cneighbours_8(point: complex,
+                  *,
+                  add_self: bool=False) -> typing.Iterator[complex]:
+    """
+    Return the 8-neighbourhood around the complex coordinates. If `add_self`
+    is true, then return the point itself as well.
+
+    :param add_self: boolean, add self into the value
+    :return: a generator of neighbour coordinates
+    """
+
+    for delta in ((_CNEIGHBOURHOOD_8, _CNEIGHBOURHOOD_8_WITH_SELF)[add_self]):
+        yield point + delta

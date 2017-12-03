@@ -10,22 +10,10 @@ def part1():
 
 
 def part2():
-    vals = {(0 + 0j): 1}
     target = int(d.data)
-
-    def neighbour_sum(coords):
-        the_sum = 0
-        for i in [1, -1, 1j, -1j, 1 + 1j, 1 - 1j, -1 + 1j, -1 - 1j]:
-            the_sum += vals.get(coords + i, 0)
-
-        return the_sum
+    values = defaultdict(int, {0: 1})
 
     for i in spiral_walk():
-        if i == 0:
-            continue
-
-        the_value = neighbour_sum(i)
-        if the_value > target:
-            return the_value
-
-        vals[i] = the_value
+        values[i] = sum(values[c] for c in cneighbours_8(i, add_self=True))
+        if values[i] > target:
+            return values[i]
