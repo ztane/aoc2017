@@ -1,4 +1,6 @@
-from helpers import *
+from collections import defaultdict
+
+from helpers import get_aoc_data, spiral_walk, cmanhattan, cneighbours_8
 
 d = get_aoc_data(day=3)
 

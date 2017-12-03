@@ -1,4 +1,4 @@
-from helpers import *
+from helpers import get_aoc_data
 
 d = get_aoc_data(day=1)
 

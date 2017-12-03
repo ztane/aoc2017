@@ -1,4 +1,6 @@
-from helpers import *
+from itertools import permutations
+
+from helpers import get_aoc_data
 
 d = get_aoc_data(day=2)
 
