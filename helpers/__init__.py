@@ -32,6 +32,12 @@ class Data:
         return self.data.split(separator)
 
     @property
+    def sentences(self):
+        return [
+            i.split() for i in self.lines
+        ]
+
+    @property
     def integer_matrix(self):
         return [[int(i) for i in line.split()] for line in self.lines]
 
