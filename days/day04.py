@@ -11,6 +11,6 @@ def part1():
 
 def part2():
     return sum(
-        all(sorted(w1) != sorted(w2) for w1, w2 in combinations(phrase, 2))
+        len(phrase) == len(set(map(tuple, map(sorted, phrase))))
         for phrase in d.sentences
     )
