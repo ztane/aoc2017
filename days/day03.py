@@ -7,12 +7,12 @@ d = get_aoc_data(day=3)
 
 def part1():
     for n, coords in enumerate(spiral_walk(), 1):
-        if n == int(d.data):
+        if n == d.as_int:
             return cmanhattan(coords)
 
 
 def part2():
-    target = int(d.data)
+    target = d.as_int
     values = defaultdict(int, {0: 1})
 
     for i in spiral_walk():

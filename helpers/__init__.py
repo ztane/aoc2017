@@ -20,26 +20,69 @@ from typing import Union, Dict
 from aocd import get_data
 
 
+class reify(object):
+    """
+    Rip of `reify` from Pyramid framework.
+
+    Use as a class method decorator.  It operates almost exactly like the
+    Python ``@property`` decorator, but it puts the result of the method it
+    decorates into the instance dict after the first call, effectively
+    replacing the function it decorates with an instance variable.  It is, in
+    Python parlance, a non-data descriptor.
+    """
+    def __init__(self, wrapped):
+        self.wrapped = wrapped
+        update_wrapper(self, wrapped)
+
+    def __get__(self, inst, objtype=None):
+        if inst is None:
+            return self
+        val = self.wrapped(inst)
+        setattr(inst, self.wrapped.__name__, val)
+        return val
+
+
 class Data:
-    def __init__(self, data):
+    def __init__(self, data: str):
         self.data = data.rstrip('\n\r')
 
-    @property
-    def lines(self):
-        return list(filter(bool, map(str.rstrip, self.data.splitlines())))
+    @reify
+    def lines(self) -> typing.Tuple[str, ...]:
+        return tuple(filter(bool, map(str.rstrip, self.data.splitlines())))
 
-    def split(self, separator=', '):
+    def split(self, separator=', ') -> typing.List[str]:
         return self.data.split(separator)
 
-    @property
-    def sentences(self):
+    @reify
+    def as_int(self) -> int:
+        return int(self.data)
+
+    @reify
+    def extract_ints(self) -> typing.Tuple[int, ...]:
+        return tuple(map(int, re.findall(r'-?\d+', self.data)))
+
+    @reify
+    def sentences(self) -> typing.List[typing.List[str]]:
+        """
+        Assume the data is
+
+        :return:
+        """
         return [
             i.split() for i in self.lines
         ]
 
-    @property
-    def integer_matrix(self):
+    @reify
+    def integer_matrix(self) -> typing.List[typing.List[int]]:
+        """
+        Assume the data is a 2-dimensional space-separated integer matrix
+
+        :return: that matrix
+        """
         return [[int(i) for i in line.split()] for line in self.lines]
+
+    def parsed(self, fmt, verbatim_ws=False):
+        return Parser(fmt, verbatim_ws=verbatim_ws).for_lines(self.lines)
 
 
 def get_aoc_data(day: int) -> Data:
