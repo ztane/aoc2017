@@ -81,8 +81,28 @@ class Data:
         """
         return [[int(i) for i in line.split()] for line in self.lines]
 
-    def parsed(self, fmt, verbatim_ws=False):
+    def parsed(self, fmt: str, verbatim_ws: bool=False) \
+            -> typing.Iterator[typing.Tuple]:
+        """
+        Return the data parsed with a single parser
+        :param fmt: the format
+        :param verbatim_ws: whether verbatim boolean is used
+        :return: iterator of parsed tuples
+        """
         return Parser(fmt, verbatim_ws=verbatim_ws).for_lines(self.lines)
+
+    def print_excerpt(self) -> None:
+        """
+        Print an excerpt of the data. Maximum of 10 lines followed by
+        how many lines were omitted
+        :return: None
+        """
+        lines = self.lines
+        for i in lines[:7]:
+            print(i)
+        if len(lines) > 10:
+            print(f'Total {len(lines)} lines; {len(lines) - 7} '
+                  f'remaining lines omitted...')
 
 
 def get_aoc_data(day: int) -> Data:
@@ -500,3 +520,21 @@ def cneighbours_8(point: complex,
 
     for delta in ((_CNEIGHBOURHOOD_8, _CNEIGHBOURHOOD_8_WITH_SELF)[add_self]):
         yield point + delta
+
+
+class ring_list(list):
+    """
+    Fixed length list, with modular indexing
+    """
+
+    def __delitem__(self, key):
+        raise NotImplemented
+
+    def pop(self, *a, **kw):
+        raise NotImplemented
+
+    def __getitem__(self, item):
+        return super().__getitem__(item % len(self))
+
+    def __setitem__(self, item, value):
+        return super().__setitem__(item % len(self), value)
