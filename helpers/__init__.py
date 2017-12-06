@@ -538,3 +538,15 @@ class ring_list(list):
 
     def __setitem__(self, item, value):
         return super().__setitem__(item % len(self), value)
+
+
+class counting_set(dict):
+    def __init__(self, iterator=None):
+        super().__init__()
+        if iterator is not None:
+            for i in iterator:
+                self.add(i)
+
+    def add(self, item):
+        if item not in self:
+            self[item] = len(self) + 1

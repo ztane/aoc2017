@@ -5,10 +5,7 @@ d = get_aoc_data(day=6)
 
 def part1_and_2():
     memory = ring_list(d.extract_ints)
-    seen = {tuple(memory)}
-    first_in_cycle = None
-    cycle_start = None
-    cycle_length = 0
+    seen = counting_set([tuple(memory)])
     get_second = op.itemgetter(1)
 
     for step in count(1):
@@ -19,14 +16,8 @@ def part1_and_2():
             memory[cell + i] += 1
 
         state = tuple(memory)
-        if cycle_start is not None:
-            cycle_length += 1
-
-            if state == first_in_cycle:
-                return cycle_start, cycle_length
-
-        elif state in seen:
-            first_in_cycle = state
-            cycle_start = step
+        if state in seen:
+            cycle_start = seen[state]
+            return step, step - cycle_start + 1
 
         seen.add(state)
