@@ -550,3 +550,33 @@ class counting_set(dict):
     def add(self, item):
         if item not in self:
             self[item] = len(self) + 1
+
+
+T = typing.TypeVar('T')
+
+
+def find_unique(items: typing.Iterable[T],
+                key: typing.Callable[[T], typing.Any] = lambda x: x) -> typing.Optional[T]:
+    """
+    Find the one item that is unique keywise or none at all
+    :param items: iterator of items
+    :param key:
+    :return:
+    """
+
+    keys_to_items = defaultdict(list)
+    for i in items:
+        keys_to_items[key(i)].append(i)
+
+    candidates = []
+    for i in keys_to_items.values():
+        if len(i) == 1:
+            candidates.append(i)
+
+    if len(candidates) > 1:
+        raise ValueError('More than one "unique"')
+
+    if candidates:
+        return candidates[0][0]
+
+    return None
