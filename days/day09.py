@@ -4,35 +4,31 @@ d = get_aoc_data(day=9)
 
 
 def part1_and_2():
-    open_groups = []
-    total_score = 0
-    garbage = False
-    ignore = False
-    garbage_score = 0
+    open_groups = 0
+    total_score = garbage_score = 0
+    garbage = ignore = False
     for i in d.data:
         if ignore:
             ignore = False
-            continue
 
-        if i == '!':
+        elif i == '!':
             ignore = True
-            continue
 
-        if not garbage:
-            if i == '{':
-                open_groups.append(1)
-            if i == '}':
-                total_score += len(open_groups)
-                open_groups.pop()
-            if i == '<':
-                garbage = True
-                continue
-
-        else:
+        elif garbage:
             if i == '>':
                 garbage = False
+            else:
+                garbage_score += 1
 
-        if garbage:
-            garbage_score += 1
+        else:
+            if i == '{':
+                open_groups += 1
+
+            if i == '}':
+                total_score += open_groups
+                open_groups -= 1
+
+            if i == '<':
+                garbage = True
 
     return total_score, garbage_score
