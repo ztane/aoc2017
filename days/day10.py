@@ -27,9 +27,5 @@ def part1():
 
 def part2():
     knots = list(d.data.encode()) + [17, 31, 73, 47, 23]
-    result = knot_it(knots, iterations=64)
-
-    hash_value = ''.join(
-        f'{reduce(op.xor, result[i: i + 16]):02x}' for i in range(0, 256, 16)
-    )
-    return hash_value
+    h = knot_it(knots, iterations=64)
+    return bytes(reduce(op.xor, h[i: i + 16]) for i in range(0, 256, 16)).hex()
