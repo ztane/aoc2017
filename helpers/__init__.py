@@ -534,11 +534,42 @@ class ring_list(list):
         raise NotImplemented
 
     def __getitem__(self, item):
+        if isinstance(item, slice):
+            if item.stop is not None and item.stop < 0:
+                raise ValueError('Slice indices must be non-negative')
+
+            if item.start is not None and item.start < 0:
+                raise ValueError('Slice indices must be non-negative')
+
+            return [self[i] for i in range(*item.indices(2 ** 32))]
+
         return super().__getitem__(item % len(self))
 
     def __setitem__(self, item, value):
+        if isinstance(item, slice):
+            if item.stop and item.stop < 0:
+                raise ValueError('Slice indices must be non-negative')
+
+            if item.start and item.start < 0:
+                raise ValueError('Slice indices must be non-negative')
+
+            indices = range(*item.indices(2 ** 32))
+            if len(indices) != len(value):
+                raise ValueError('Slice length doesn\'t match')
+
+            for i, e in zip(indices, value):
+                self[i] = e
+
+            return
+
         return super().__setitem__(item % len(self), value)
 
+    def slice(self, start, end):
+        return [self[i] for i in range(start, end)]
+
+    def splice(self, start, assigned):
+        for i, e in zip(range(start, start + len(assigned)), assigned):
+            self[i] = e
 
 class counting_set(dict):
     def __init__(self, iterator=None):
