@@ -405,6 +405,8 @@ def a_star_solve(origin,
                     min_h = h
                 heappush(queue, Node(h,
                                      distance + d_dist, node))
+
+
                 cnt += 1
 
     print(cnt, 'iterations')
