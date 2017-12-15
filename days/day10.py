@@ -19,6 +19,12 @@ def knot_it(knots, iterations=1):
     return state
 
 
+def knot_hash(s):
+    knots = list(s.encode()) + [17, 31, 73, 47, 23]
+    h = knot_it(knots, iterations=64)
+    return bytes(reduce(op.xor, h[i: i + 16]) for i in range(0, 256, 16))
+
+
 def part1():
     knots = map(int, d.data.split(','))
     result = knot_it(knots, iterations=1)
@@ -26,6 +32,4 @@ def part1():
 
 
 def part2():
-    knots = list(d.data.encode()) + [17, 31, 73, 47, 23]
-    h = knot_it(knots, iterations=64)
-    return bytes(reduce(op.xor, h[i: i + 16]) for i in range(0, 256, 16)).hex()
+    return knot_hash(d.data).hex()

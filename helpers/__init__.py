@@ -613,3 +613,29 @@ def find_unique(items: typing.Iterable[T],
         return candidates[0][0]
 
     return None
+
+
+class SparseMap(dict):
+    def __init__(self, the_map=(), *, default=None):
+        super().__init__()
+        if callable(default):
+            self.generate = default
+        else:
+            self.generate = lambda x, y: default
+
+        y = -1
+        for y, row in enumerate(the_map):
+            for x, cell in enumerate(row):
+                self[x, y] = cell
+
+        self.rows = y + 1
+
+    def add_row(self, row):
+        new_y = self.rows
+        for x, cell in enumerate(row):
+            self[x, new_y] = cell
+        self.rows += 1
+
+    def __missing__(self, key):
+        x, y = key
+        self[key] = self.generate(x, y)
