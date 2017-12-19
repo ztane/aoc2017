@@ -19,13 +19,18 @@ def part1_and_2():
             break
 
         if the_map[y][x] == '+':
-            if the_map[y][x + 1] == '-':
+            e = the_map[y][x + 1]
+            w = the_map[y][x - 1]
+            n = the_map[y - 1][x]
+            s = the_map[y + 1][x]
+
+            if e == '-' or e.isalpha():
                 dx, dy = 1, 0
-            elif the_map[y][x - 1] == '-':
+            elif w == '-' or w.isalpha():
                 dx, dy = -1, 0
-            elif the_map[y + 1][x] == '|':
+            elif s == '|' or s.isalpha():
                 dx, dy = 0, 1
-            elif the_map[y - 1][x] == '|':
+            elif n == '|' or n.isalpha():
                 dx, dy = 0, -1
             else:
                 raise ValueError('dont know about turn')
