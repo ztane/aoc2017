@@ -12,7 +12,7 @@ def part1():
         spinlock.append(i)
         spinlock.rotate(1)
 
-    print(spinlock[spinlock.index(2017) + 1])
+    return spinlock[spinlock.index(2017) + 1]
 
 
 def part2():
@@ -22,7 +22,5 @@ def part2():
         spinlock.rotate(-(skips + 1))
         spinlock.append(i)
         spinlock.rotate(1)
-        if i % 10000 == 0:
-            print(i)
 
-    print(spinlock[spinlock.index(0) + 1])
+    return spinlock[spinlock.index(0) + 1]
