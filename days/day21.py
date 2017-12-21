@@ -1,10 +1,13 @@
 import numpy
-import numpy as np
 
-from helpers import *
+from helpers import get_aoc_data
 
 d = get_aoc_data(day=21)
-rules = []
+rules = {}
+
+
+def totuple(a):
+    return tuple(a.flatten())
 
 
 def parse_rule(line):
@@ -15,54 +18,40 @@ def parse_rule(line):
     ])
 
 
-@lru_cache(maxsize=None)
-def find_rule(pattern):
-    array = numpy.array(pattern)
-    for ours in [array, array.T]:
-        for flipped in [
-            ours,
-            numpy.flip(ours, 0),
-            numpy.flip(ours, 1),
-            numpy.flip(numpy.flip(ours, 0), 1)]:
+def expand(state):
+    rule_size = [2, 3][len(state) % 2]
+    total = []
+    tile_range = range(0, len(state), rule_size)
+    for y in tile_range:
+        row = []
+        for x in tile_range:
+            row.append(
+                rules[totuple(state[y: y + rule_size, x: x + rule_size])])
 
-            for src, tgt in rules:
-                if numpy.array_equiv(flipped, src):
-                    return tgt
+        total.append(numpy.concatenate(row, axis=1))
 
-    raise ValueError('No rule found')
-
-def expand_map(the_map):
-    rule_size, tgt_size = (2, 3) if len(the_map) % 2 == 0 else (3, 4)
-
-    total = None
-    for y in range(0, len(the_map), rule_size):
-        row = None
-        for x in range(0, len(the_map), rule_size):
-            part = the_map[y: y + rule_size, x: x + rule_size]
-            corresponding_rule = find_rule(tuple(map(tuple, part)))
-            if row is None:
-                row = corresponding_rule
-            else:
-                row = numpy.concatenate((row, corresponding_rule), axis=1)
-
-        if total is None:
-            total = row
-        else:
-            total = numpy.concatenate((total, row), axis=0)
-
-    return total
+    return numpy.concatenate(total, axis=0)
 
 
 def part1_and_2():
-    global rules
-    the_map = [[i == '#' for i in row] for row in """.#.\n..#\n###""".splitlines()]
-    the_map = np.array(the_map)
+    state = numpy.array(
+        [[0, 1, 0],
+         [0, 0, 1],
+         [1, 1, 1]],
+        dtype=bool
+    )
+
     for src, tgt in d.parsed('<> => <>'):
-        rules.append((parse_rule(src), parse_rule(tgt)))
+        src = parse_rule(src)
+        tgt = parse_rule(tgt)
+        for transposed in [src, src.T]:
+            for y_flip in [transposed, numpy.flipud(transposed)]:
+                for x_flip in [y_flip, numpy.fliplr(y_flip)]:
+                    rules[totuple(x_flip)] = tgt
 
     for i in range(18):
         if i == 5:
-            part1 = numpy.count_nonzero(the_map)
-        the_map = expand_map(the_map)
+            part1 = numpy.count_nonzero(state)
+        state = expand(state)
 
-    return part1, numpy.count_nonzero(the_map)
+    return part1, numpy.count_nonzero(state)
