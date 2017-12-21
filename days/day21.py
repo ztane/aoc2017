@@ -8,26 +8,19 @@ rules = {}
 
 def parse_rule(line):
     return numpy.array([
-        [cell == '#' for cell in row]
-        for row in
-        line.split('/')
+        [cell == '#' for cell in row] for row in line.split('/')
     ])
 
 
 def expand(state):
     rule_size = [2, 3][len(state) % 2]
-    total = []
     tile_range = range(0, len(state), rule_size)
-    for y in tile_range:
-        row = []
-        for x in tile_range:
-            row.append(
-                rules[state[y: y + rule_size, x: x + rule_size].tobytes()])
 
-        total.append(row)
-
-    return numpy.block(total)
-
+    return numpy.block([
+        [ rules[state[y: y + rule_size, x: x + rule_size].tobytes()]
+            for x in tile_range ]
+        for y in tile_range
+    ])
 
 def part1_and_2():
     state = numpy.array(
@@ -47,8 +40,8 @@ def part1_and_2():
 
     for i in range(18):
         if i == 5:
-            part1 = numpy.count_nonzero(state)
+            count_after_5 = numpy.count_nonzero(state)
         state = expand(state)
 
-    return part1, numpy.count_nonzero(state)
+    return count_after_5, numpy.count_nonzero(state)
 
