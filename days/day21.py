@@ -6,10 +6,6 @@ d = get_aoc_data(day=21)
 rules = {}
 
 
-def totuple(a):
-    return tuple(a.flatten())
-
-
 def parse_rule(line):
     return numpy.array([
         [cell == '#' for cell in row]
@@ -26,11 +22,11 @@ def expand(state):
         row = []
         for x in tile_range:
             row.append(
-                rules[totuple(state[y: y + rule_size, x: x + rule_size])])
+                rules[state[y: y + rule_size, x: x + rule_size].tobytes()])
 
-        total.append(numpy.concatenate(row, axis=1))
+        total.append(row)
 
-    return numpy.concatenate(total, axis=0)
+    return numpy.block(total)
 
 
 def part1_and_2():
@@ -47,7 +43,7 @@ def part1_and_2():
         for transposed in [src, src.T]:
             for y_flip in [transposed, numpy.flipud(transposed)]:
                 for x_flip in [y_flip, numpy.fliplr(y_flip)]:
-                    rules[totuple(x_flip)] = tgt
+                    rules[x_flip.tobytes()] = tgt
 
     for i in range(18):
         if i == 5:
@@ -55,3 +51,4 @@ def part1_and_2():
         state = expand(state)
 
     return part1, numpy.count_nonzero(state)
+
