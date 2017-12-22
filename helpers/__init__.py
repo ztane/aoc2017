@@ -624,11 +624,16 @@ class SparseMap(dict):
             self.generate = lambda x, y: default
 
         y = -1
+        x = -1
+        max_x = -1
         for y, row in enumerate(the_map):
             for x, cell in enumerate(row):
                 self[x, y] = cell
 
+            max_x = max(x, max_x)
+
         self.rows = y + 1
+        self.columns = max_x + 1
 
     def add_row(self, row):
         new_y = self.rows
@@ -639,3 +644,42 @@ class SparseMap(dict):
     def __missing__(self, key):
         x, y = key
         self[key] = self.generate(x, y)
+        return self[key]
+
+
+class SparseComplexMap(dict):
+    def __init__(self, the_map=(), *, default=None):
+        super().__init__()
+        if callable(default):
+            self.generate = default
+        else:
+            self.generate = lambda x, y: default
+
+        y = -1
+        x = -1
+        max_x = -1
+        for y, row in enumerate(the_map):
+            for x, cell in enumerate(row):
+                self[x + y * 1j] = cell
+
+            max_x = max(x, max_x)
+
+        self.rows = y + 1
+        self.columns = max_x + 1
+
+    def add_row(self, row):
+        new_y = self.rows
+        for x, cell in enumerate(row):
+            self[x + new_y * 1j] = cell
+        self.rows += 1
+
+    def __missing__(self, key):
+        x, y = key.real, key.imag
+        self[key] = self.generate(x, y)
+        return self[key]
+
+    @property
+    def center(self):
+        if not self.columns % 2 or not self.rows % 2:
+            raise ValueError('The width and height both must be odd')
+        return complex(self.columns // 2, self.rows // 2)
